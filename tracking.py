@@ -5,7 +5,7 @@ import cv2.cv as cv
 import numpy as np
 # Tested on this video, available at http://www.comp.nus.edu.sg/~ngtk/CS4243Video/football_videos_Android/
 # 14k HD frames so be patient...
-center_vid_file = 'centre_camera.mp4' 
+center_vid_file = 'football_right.mp4' 
 
 def backgroundExtraction(videoFile):
 	"""Receives a video filename(with extension) and returns the extracted background"""
@@ -24,13 +24,13 @@ def backgroundExtraction(videoFile):
 
 		_,img = vid_cap.read()
 		avg_img = img
-
+                print "Frame = ", 1
 		
-		for fr in range(1, frame_count+1):
+		for fr in range(1, frame_count):
 			_,img = vid_cap.read()
 			fr_fl = float(fr)
 			avg_img = (fr_fl*avg_img + img)/(fr_fl+1)
-			print "Frame = ", fr
+			print "Frame = ", fr+1
 			
 		avg_img = avg_img
 		vid_cap.release()
@@ -43,7 +43,7 @@ def main():
 		
 		background = backgroundExtraction(center_vid_file)
 		cv2.imshow('Background', background/255)
-		cv2.imwrite("Background.jpg", background)
+		cv2.imwrite("background.jpg", background)
 		cv2.waitKey(0)
 		cv2.destroyAllWindows()
 	except IOError as e:
