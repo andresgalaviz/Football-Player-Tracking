@@ -18,11 +18,12 @@ def object_mask(img, bg, offset_v = 0, offset_h = 0):
     sat_threshold = int(0.1 * 256)
     hue_threshold_sq = hue_threshold**2
     sat_threshold_sq = sat_threshold**2
-    mask = np.ones(img.shape)
-    bg_hsv = cv2.cvtColor(bg, cv2.COLOR_BGR2HSV)
-    img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     n_rows = img.shape[0]
     n_cols = img.shape[1]
+    mask = np.ones([n_rows, n_cols])
+    bg_hsv = cv2.cvtColor(bg, cv2.COLOR_BGR2HSV)
+    img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    
     for i in range(offset_v - 1, n_rows - 1):
         for j in range(offset_h - 1, n_cols - 1):
             hue_diff = int(img_hsv[i, j, 0]) - int(bg_hsv[i, j, 0])
@@ -38,6 +39,13 @@ def object_mask(img, bg, offset_v = 0, offset_h = 0):
                 #print "saturation diff:", i , ",", j
                 continue
     return mask
+
+# Mask background with given color (default: black)
+
+def mask_background(img, mask, mask_color=(0, 0, 0)):
+    result = np.array(img, copy=True)
+    result[mask == 1] = mask_color
+    return result
 
 # Print the frame width, frame height, frames per second 
 # and frame count of the input video using cap.get
@@ -69,16 +77,13 @@ def main():
     obj_mask = object_mask(f, bg, offset_v)
     print "Object mask completed in", (time.time() - start_time), "s"
 
-
     
-    
-    #fg = np.array(f, copy=True)
-    black = np.array([255, 255, 255])
-    fg = np.array(ma.fix_invalid(f, mask = obj_mask, fill_value = black).tolist())
-     
-    cv2.imshow('foreground', fg)
+    start_time = time.time()
+    fg = mask_background(f, obj_mask)
+    print "Mask background completed in", (time.time() - start_time), "s"
+    cv2.imshow("foreground", fg)
     cv2.waitKey(0)
-
+    
     
 
     
