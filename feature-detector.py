@@ -1,5 +1,6 @@
 import numpy as np
 np.set_printoptions(threshold=np.nan)
+import numpy.ma as ma
 import numpy.linalg as la
 import cv2
 import cv2.cv as cv
@@ -7,45 +8,82 @@ import math
 import matplotlib.pyplot as plt
 import time
 
-# Count runtime
+# Detects objects by comparing image with a reference background
+# Compare only hue and saturation; ignore value
+# because illumination invariant
+# Object mask: 0 means foreground, 1 means background
 
-start_time = time.time()
+def object_mask(img, bg, offset_v = 0, offset_h = 0):
+    hue_threshold = int(0.1 * 180)
+    sat_threshold = int(0.1 * 256)
+    hue_threshold_sq = hue_threshold**2
+    sat_threshold_sq = sat_threshold**2
+    mask = np.ones(img.shape)
+    bg_hsv = cv2.cvtColor(bg, cv2.COLOR_BGR2HSV)
+    img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    n_rows = img.shape[0]
+    n_cols = img.shape[1]
+    for i in range(offset_v - 1, n_rows - 1):
+        for j in range(offset_h - 1, n_cols - 1):
+            hue_diff = int(img_hsv[i, j, 0]) - int(bg_hsv[i, j, 0])
+            hue_diff_sq = hue_diff**2
+            if (hue_diff_sq > hue_threshold_sq):
+                mask[i, j] = 0
+                #print "hue diff:", i , ",", j
+                continue
+            sat_diff = int(img_hsv[i, j, 1]) - int(bg_hsv[i, j, 1])
+            sat_diff_sq = sat_diff**2
+            if (sat_diff_sq > sat_threshold_sq):
+                mask[i, j] = 0
+                #print "saturation diff:", i , ",", j
+                continue
+    return mask
 
-# Greyscale intensity levels
-
-n_greyscale_levels = 256
-
-
-
-def main():
-    # Read the .mp4 video using OpenCV Python API cv2.VideoCapture
-
-    cap = cv2.VideoCapture("football_right.mp4")
-
-    # Print the frame width, frame height, frames per second 
-    # and frame count of the input video using cap.get
-
+# Print the frame width, frame height, frames per second 
+# and frame count of the input video using cap.get
+    
+def video_info(cap):
     fwidth = cap.get(cv.CV_CAP_PROP_FRAME_WIDTH)
     fheight = cap.get(cv.CV_CAP_PROP_FRAME_HEIGHT)
     fps = cap.get(cv.CV_CAP_PROP_FPS)
     fcount = cap.get(cv.CV_CAP_PROP_FRAME_COUNT)
+    print "Frame width: ", fwidth, "\nFrame height: ", fheight, "\nFrames per second: ", fps, "\nFrame count: ", fcount
 
-    print "Frame width: " + str(fwidth) + "\nFrame height: " + str(fheight) + "\nFrames per second: " + str(fps) + "\nFrame count: " + str(fcount)
+def main():
 
-    _,img = cap.read()
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    #cv2.imshow('img', img)
-    #cv2.waitKey(0)
-
-    surf = cv2.SURF(400)
-    kp, des = surf.detectAndCompute(img,None)
-    n_kp = len(kp)
-    print "Number of keypoints: " + str(n_kp)
-    img2 = cv2.drawKeypoints(img,kp,None,(255,0,0),4)
-    plt.imshow(img2)
-    plt.show()
+    bg = cv2.imread("background.jpg", cv2.CV_LOAD_IMAGE_COLOR)
     
+    # Read the video
+
+    cap = cv2.VideoCapture("football_right.mp4")
+    n_frames = cap.get(cv.CV_CAP_PROP_FRAME_COUNT)
+
+    
+
+    _,f = cap.read()
+
+    # Skip rows before starting object detection
+    
+    offset_v = 211
+    start_time = time.time()
+    obj_mask = object_mask(f, bg, offset_v)
+    print "Object mask completed in", (time.time() - start_time), "s"
+
+
+    
+    
+    #fg = np.array(f, copy=True)
+    black = np.array([255, 255, 255])
+    fg = np.array(ma.fix_invalid(f, mask = obj_mask, fill_value = black).tolist())
+     
+    cv2.imshow('foreground', fg)
+    cv2.waitKey(0)
+
+    
+
+    
+    cv2.destroyAllWindows()
     cap.release()
 
 main()
-print("Done! Took %s seconds" % (time.time() - start_time))
+print "Done!"
