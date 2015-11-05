@@ -77,8 +77,13 @@ def feature_vector(img, obj_x, obj_y, x_max, y_max):
 
 #
 
-def cluster(data):
-    _, classified_points, centroids = cv2.kmeans(data=data, K=18, criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_MAX_ITER, 1, 10), attempts=1, flags=cv2.KMEANS_RANDOM_CENTERS)
+def cluster(np_arr):
+    n_rows = np_arr.shape[0]
+    n_cols = np_arr.shape[1]
+    samples = cv.CreateMat(n_rows, n_cols, cv.CV_32FC1)
+    cv_arr = cv.fromarray(np_arr)
+    cv.Convert(cv_arr, samples)
+    _, classified_points, centroids = cv2.kmeans(data=np_arr, K=18, criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_MAX_ITER, 1, 10), attempts=1, flags=cv2.KMEANS_RANDOM_CENTERS)
     return centroids
 
 
@@ -121,7 +126,7 @@ def main():
     #np.savetxt("fvs.txt", fvs, '%5.8f')
 
     fvs = np.loadtxt("fvs.txt")
-    fvs = fvs.astype(float)
+    
 
     start_time = time.time()
     centroids = cluster(fvs)
