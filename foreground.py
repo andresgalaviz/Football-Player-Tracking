@@ -7,6 +7,7 @@ import cv2.cv as cv
 import math
 import matplotlib.pyplot as plt
 import time
+import random
 
 # Detects objects by comparing image with a reference background
 # Compare only hue and saturation; ignore value
@@ -14,10 +15,8 @@ import time
 # Object mask: 0 means foreground, 1 means background
 
 def object_mask(img, bg, offset_v = 0, offset_h = 0):
-    hue_threshold = int(0.02 * 180)
-    sat_threshold = int(0.20 * 256)
+    hue_threshold = int(0.03 * 180)
     hue_threshold_sq = hue_threshold**2
-    sat_threshold_sq = sat_threshold**2
     n_rows = img.shape[0]
     n_cols = img.shape[1]
     mask = np.ones([n_rows, n_cols], dtype=np.int)
@@ -30,6 +29,10 @@ def object_mask(img, bg, offset_v = 0, offset_h = 0):
         for j in range(offset_h - 1, n_cols - 1):
             hue = int(img_hsv[i, j, 0])
             bg_hue = int(bg_hsv[i, j, 0])
+
+            # Retrieve foreground only if background
+            # color of green field
+            
             if not on_field_background(bg_hue):
                 continue
             hue_diff = hue - bg_hue
@@ -40,6 +43,8 @@ def object_mask(img, bg, offset_v = 0, offset_h = 0):
                 obj_y.append(j)
                 continue
     return mask, np.array(obj_x, dtype=np.int), np.array(obj_y, dtype=np.int)
+
+# Hue of green color field
 
 def on_field_background(hue):
     if hue in range(40, 50):
@@ -59,12 +64,12 @@ def mask_background(img, mask, mask_color=(0,0,0)):
 # hue value
 # saturation value
 
-def feature_vector(img, obj_x, obj_y, x_max, y_max):
+def feature_vector(img, obj_x, obj_y, x_max, y_max, increment=1):
     n_features = 4
     result = np.zeros([1, n_features])
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     n_points = obj_x.size
-    for i in range(0, n_points - 1):
+    for i in xrange(0, n_points, increment):
 
         # Normalize the values
         
@@ -74,8 +79,14 @@ def feature_vector(img, obj_x, obj_y, x_max, y_max):
         sat = hsv[x, y, 1] / 255.
         fv = np.array([x, y, hue, sat])
         result = np.vstack((result, fv))
+        
     result = np.delete(result, 0, 0)
     return result
+
+def show_images(original_frame, foreground):
+    cv2.imshow("original frame", original_frame)
+    cv2.imshow("foreground", foreground)
+    cv2.waitKey(0)
 
 def main():
 
@@ -88,8 +99,7 @@ def main():
     fwidth = cap.get(cv.CV_CAP_PROP_FRAME_WIDTH)
     fheight = cap.get(cv.CV_CAP_PROP_FRAME_HEIGHT)
     fps = cap.get(cv.CV_CAP_PROP_FPS)
-    
-    #print "Frame width: ", fwidth, "\nFrame height: ", fheight, "\nFrames per second: ", fps, "\nFrame count: ", fcount
+    print "Frame - width:", fwidth, ", height:", fheight, ", FPS:", fps, ", # Frames:", n_frames
 
     
 
@@ -106,20 +116,13 @@ def main():
     purple = (217, 156, 177)
     fg = mask_background(f, obj_mask, purple)
     
-    #cv2.imshow("original", f)
-    cv2.imshow("foreground", fg)
-    cv2.waitKey(0)
+    #show_images(f, fg)
 
-    #start_time = time.time()
-    #fvs = feature_vector(f, obj_x, obj_y, x_max=fheight, y_max=fwidth)
-    #print "Feature vectors completed in", (time.time() - start_time), "s"
-    #np.savetxt("fvs.txt", fvs, '%5.8f')
+    start_time = time.time()
+    fvs = feature_vector(f, obj_x, obj_y, x_max=fheight, y_max=fwidth, increment=3)
+    print ("Feature vectors %s (%ds)" % (str(fvs.shape), (time.time() - start_time)))
+    np.savetxt("foreground.txt", fvs, '%5.8f')
 
-    #fvs = np.loadtxt("fvs.txt")
-    
-
-    
-    
     cv2.destroyAllWindows()
     cap.release()
 
