@@ -14,8 +14,8 @@ import time
 # Object mask: 0 means foreground, 1 means background
 
 def object_mask(img, bg, offset_v = 0, offset_h = 0):
-    hue_threshold = int(0.15 * 180)
-    sat_threshold = int(0.15 * 256)
+    hue_threshold = int(0.02 * 180)
+    sat_threshold = int(0.20 * 256)
     hue_threshold_sq = hue_threshold**2
     sat_threshold_sq = sat_threshold**2
     n_rows = img.shape[0]
@@ -28,25 +28,27 @@ def object_mask(img, bg, offset_v = 0, offset_h = 0):
     
     for i in range(offset_v - 1, n_rows - 1):
         for j in range(offset_h - 1, n_cols - 1):
-            hue_diff = int(img_hsv[i, j, 0]) - int(bg_hsv[i, j, 0])
-            hue_diff_sq = hue_diff**2
-            if (hue_diff_sq > hue_threshold_sq):
-                mask[i, j] = 0
-                obj_x.append(i)
-                obj_y.append(j)
+            hue = int(img_hsv[i, j, 0])
+            bg_hue = int(bg_hsv[i, j, 0])
+            if not on_field_background(bg_hue):
                 continue
-            sat_diff = int(img_hsv[i, j, 1]) - int(bg_hsv[i, j, 1])
-            sat_diff_sq = sat_diff**2
-            if (sat_diff_sq > sat_threshold_sq):
+            hue_diff = hue - bg_hue
+            hue_diff_sq = hue_diff**2
+            if (hue_diff_sq > hue_threshold_sq): 
                 mask[i, j] = 0
                 obj_x.append(i)
                 obj_y.append(j)
                 continue
     return mask, np.array(obj_x, dtype=np.int), np.array(obj_y, dtype=np.int)
 
+def on_field_background(hue):
+    if hue in range(40, 50):
+        return True
+    return False
+
 # Mask background with given color (default: black)
 
-def mask_background(img, mask, mask_color=(0, 0, 0)):
+def mask_background(img, mask, mask_color=(0,0,0)):
     result = np.array(img, copy=True)
     result[mask == 1] = mask_color
     return result
@@ -75,18 +77,6 @@ def feature_vector(img, obj_x, obj_y, x_max, y_max):
     result = np.delete(result, 0, 0)
     return result
 
-#
-
-def cluster(np_arr):
-    n_rows = np_arr.shape[0]
-    n_cols = np_arr.shape[1]
-    samples = cv.CreateMat(n_rows, n_cols, cv.CV_32FC1)
-    cv_arr = cv.fromarray(np_arr)
-    cv.Convert(cv_arr, samples)
-    _, classified_points, centroids = cv2.kmeans(data=np_arr, K=18, criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_MAX_ITER, 1, 10), attempts=1, flags=cv2.KMEANS_RANDOM_CENTERS)
-    return centroids
-
-
 def main():
 
     bg = cv2.imread("background.jpg", cv2.CV_LOAD_IMAGE_COLOR)
@@ -111,27 +101,24 @@ def main():
     start_time = time.time()
     obj_mask, obj_x, obj_y = object_mask(f, bg, offset_v)
     print "Object mask completed in", (time.time() - start_time), "s"
+    print "Object points:", obj_x.shape, obj_y.shape
     
-    
-    
-    fg = mask_background(f, obj_mask)
+    purple = (217, 156, 177)
+    fg = mask_background(f, obj_mask, purple)
     
     #cv2.imshow("original", f)
-    #cv2.imshow("foreground", fg)
-    #cv2.waitKey(0)
+    cv2.imshow("foreground", fg)
+    cv2.waitKey(0)
 
     #start_time = time.time()
     #fvs = feature_vector(f, obj_x, obj_y, x_max=fheight, y_max=fwidth)
     #print "Feature vectors completed in", (time.time() - start_time), "s"
     #np.savetxt("fvs.txt", fvs, '%5.8f')
 
-    fvs = np.loadtxt("fvs.txt")
+    #fvs = np.loadtxt("fvs.txt")
     
 
-    start_time = time.time()
-    centroids = cluster(fvs)
-    print "Clustering completed in", (time.time() - start_time), "s"
-    np.savetxt("centroid.txt", centroids, '%5.8f')
+    
     
     cv2.destroyAllWindows()
     cap.release()
