@@ -27,6 +27,17 @@ def assign_points_to_clusters(medoids, distances):
     #np.savetxt("clusters2.txt", clusters, '%5.8f')
     return clusters
 
+# Update cluster medoids to be lowest cost point.
+
+def compute_new_medoid(cluster, distances):
+    mask = np.ones(distances.shape)
+    print ("mask.shape = %s" % (str(mask.shape)))
+    mask[np.ix_(cluster,cluster)] = 0.
+    np.savetxt("mask.txt", mask, '%5.8f')
+    #cluster_distances = np.ma.masked_array(data=distances, mask=mask, fill_value=10e9)
+    #costs = cluster_distances.sum(axis=1)
+    #return costs.argmin(axis=0, fill_value=10e9)
+
 def distance_to_medoids(points, medoids):
     n_points = points.shape[0]
     n_medoids = medoids.shape[0]
@@ -52,16 +63,33 @@ def cluster(points, k=2):
     old_medoids = np.array([-1]*k) 
     new_medoids = np.array([-1]*k)
 
-    start_time = time.time()
-    distances = distance_to_medoids(points, curr_medoids)
-    print "Computing distance to medoids:", (time.time() - start_time), "s"
-    np.savetxt("distances.txt", distances, '%5.8f')
-
     
-    start_time = time.time()
-    clusters = assign_points_to_clusters(curr_medoids, distances)
-    print "Assigning points to clusters:", (time.time() - start_time), "s"
-    np.savetxt("clusters.txt", clusters, '%5.0f')
+
+    # Until the medoids stop updating, do the following:
+    n_iterations = 0
+    clustering_start_time = time.time()
+    while not ((old_medoids == curr_medoids).all()):
+        start_time = time.time()
+        distances = distance_to_medoids(points, curr_medoids)
+        print "Computing distance to", k, "medoids:", (time.time() - start_time), "s"
+        #np.savetxt("distances.txt", distances, '%5.8f')
+        
+        
+        clusters = assign_points_to_clusters(curr_medoids, distances)
+
+         
+        for curr_medoid in curr_medoids:
+            cluster = np.where(clusters == curr_medoid)[0]
+            compute_new_medoid(cluster, distances)
+            #new_medoids[curr_medoids == curr_medoid] = compute_new_medoid(cluster, distances)
+
+        old_medoids[:] = curr_medoids[:]
+        curr_medoids[:] = new_medoids[:]
+        n_iterations += 1
+        break
+    print ("Clustering converged in %d iterations (%ds)" % (n_iterations, (time.time() - clustering_start_time)))
+    return clusters, curr_medoids
+    
     
 
 def main():    
