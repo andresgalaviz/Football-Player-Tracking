@@ -11,7 +11,8 @@ def cluster(distances, k=3):
     # Pick k random medoids.
     curr_medoids = np.array([-1]*k)
     while not len(np.unique(curr_medoids)) == k:
-        curr_medoids = np.array([random.randint(0, m - 1) for _ in range(k)])
+        curr_medoids = np.array([random.randint(m/4, 3*m/4) for _ in range(k)])
+        #curr_medoids = np.array([random.randint(0, m - 1) for _ in range(k)])
     old_medoids = np.array([-1]*k) # Doesn't matter what we initialize these to.
     new_medoids = np.array([-1]*k)
    
@@ -49,18 +50,21 @@ def show_medoids_on_frame(medoids):
     _,f = cap.read()
     red = (0, 0, 255)
     blue = (255, 0, 0)
+    cv2.imshow("Original", f)
+    cv2.imwrite("cluster-input.jpg", f)
     for pt in pts:
-        cv2.circle(f, (int(pt[1]),int(pt[0])), 1, blue,-1)
+        cv2.circle(f, (int(pt[1]),int(pt[0])), 1, blue,thickness=-1)
     for medoid in medoids:
-        cv2.circle(f, (int(pts[medoid, 1]),int(pts[medoid, 0])), 10, red,-1)
+        cv2.circle(f, (int(pts[medoid, 1]),int(pts[medoid, 0])), 10, red,thickness=1)
     cv2.imshow("Medoids", f)
+    cv2.imwrite("cluster-medoid.jpg", f)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
     cap.release()
     
 
 def main():    
-    n_clusters = 18
+    n_clusters = int(18*2)
     distances = np.loadtxt("distance.txt.gz")
     print "distances:", distances.shape
     
