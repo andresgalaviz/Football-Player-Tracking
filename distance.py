@@ -9,12 +9,8 @@ import matplotlib.pyplot as plt
 import time
 import random
 
-def euclidean_distance(v1, v2):
-    sum_sq = 0
-    for i in range(v1.shape[0]):
-        sum_sq += (v1[i] - v2[i])**2
-        #print sum_sq
-    return math.sqrt(sum_sq)
+def euclidean_distance(p, q):
+    return math.sqrt(np.power(p-q,2).sum())
 
 # Maximum 100K points otherwise python process crashes
 # At 1K points, computation takes ~2s
@@ -32,9 +28,9 @@ def distance_matrix(points):
                 dm[i, j] = dm[j, i]
                 continue
             if (i < j):
-                v1 = points[i, :]
-                v2 = points[j, :]
-                dm[i, j] = euclidean_distance(v1, v2)
+                p = points[i, :]
+                q = points[j, :]
+                dm[i, j] = euclidean_distance(p, q)
     return dm
 
 def main():    
