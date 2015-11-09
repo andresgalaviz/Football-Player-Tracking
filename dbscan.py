@@ -74,8 +74,9 @@ def region_query_test(distances):
 
 def show_clusters_on_frame(classifications):
     pts = np.loadtxt("foreground_unnormalized.txt", dtype=int)
-    cap = cv2.VideoCapture("football_right.mp4")
-    _,f = cap.read()
+    cap = cv2.VideoCapture("football_left.mp4")
+    for i in range(5001):
+        _,f = cap.read()
     clusters = np.unique(classifications)
     colors = np.array([0, 0, 0])
     for i in range (1, clusters.size):
@@ -92,6 +93,14 @@ def show_clusters_on_frame(classifications):
         x = pts[i, 0]
         y = pts[i, 1]              
         cv2.circle(f, (y,x), 1, color,thickness=-1)
+
+    for c in clusters:          
+        members = np.where(classifications == c)[0]
+        foot = bottom_most_point(members, pts)
+        yellow = (0, 255, 255)
+        x = foot[0]
+        y = foot[1]              
+        cv2.circle(f, (y,x), radius=10, color=yellow,thickness=1)
     
     cv2.imshow("DBSCAN clustering", f)
     cv2.imwrite("dbscan-clusters.jpg", f)
@@ -99,12 +108,7 @@ def show_clusters_on_frame(classifications):
     cv2.destroyAllWindows()
     cap.release()
 
-def main():
-    distances = np.loadtxt("distance.txt.gz")
-    print "distances:", distances.shape
-    #region_query_test(distances)
-    eps = 0.04
-    min_points = 100
+def dbscan_test(distances, eps, min_points):
     print ("DBSCAN Clustering: eps=%f, min points=%d" % (eps, min_points))
     start_time = time.time()
     classifications = dbscan(distances, eps, min_points)
@@ -125,6 +129,19 @@ def main():
     print ("Total classified points: %d" % (n_classified_points))
     show_clusters_on_frame(classifications)
     np.savetxt("dbscan.txt", classifications, '%5.8f')
+
+def bottom_most_point(cluster, pts):
+    cluster_pts = pts[cluster, 0]
+    return pts[cluster[np.argmax(cluster_pts, axis=0)], :]
+
+def main():
+    distances = np.loadtxt("distance.txt.gz")
+    print "distances:", distances.shape
+    #region_query_test(distances)
+    for i in range(20, 21):
+        j = i / 1000.
+        dbscan_test(distances, eps=j, min_points=30)
+    
     
 
 main()
