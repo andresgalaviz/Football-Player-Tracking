@@ -18,7 +18,7 @@ def on_mouse(event, x, y, flags, param):
 def main():
     # Read the .mp4 video using OpenCV Python API cv2.VideoCapture
 
-    cap = cv2.VideoCapture("football_right.mp4")
+    cap = cv2.VideoCapture("football_left.mp4")
 
     # Print the frame width, frame height, frames per second 
     # and frame count of the input video using cap.get
