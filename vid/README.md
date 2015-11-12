@@ -1,2 +1,2 @@
-Download videos from:
-https://drive.google.com/folderview?id=0B7gBv2Jut0VxcDNENmxvS2N4Qk0
+Download panorama.mov from:
+http://1drv.ms/1SLx9cO
