@@ -18,7 +18,7 @@ def extract_background(videoFile):
 		print 'Frame Width', frame_width
 		print 'Frame Count', frame_count
 
-		frame_count = int(frame_count)
+		frame_count = min(int(frame_count), 3000)
 		print "Extracting background"
 		_,img = vid_cap.read()
 		avg_img = img
