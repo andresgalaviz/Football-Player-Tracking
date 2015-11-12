@@ -38,7 +38,7 @@ def track_player(hg_matrix):
 		threshold = cv2.dilate(threshold, None, iterations=3)
 		
 		contours, _ = cv2.findContours(threshold.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-		pts = list()
+		players_pos = list()
 		
 		# loop over the contours
 		c = 0 
@@ -60,9 +60,9 @@ def track_player(hg_matrix):
 
 			cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
-			pts.append(feet_coord)
+			players_pos.append(feet_coord)
 			c +=1
-		top_img = topview.create_topview(hg_matrix, pts)
+		top_img = topview.create_topview(hg_matrix, players_pos)
 		img=cv2.resize(img,(0,0),fx=0.6,fy=0.6)
 		cv2.imshow("Player detection", img)
 		cv2.imshow("Top image", top_img)
