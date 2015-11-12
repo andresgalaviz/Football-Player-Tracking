@@ -3,7 +3,7 @@ import sys
 import cv2
 import cv2.cv as cv
 import numpy as np
-bg_filpath = '..//img//bg.jpg'
+bg_filpath = '..//img//side-view.jpg'
 
 def extract_background(videoFile):
 	"""Receives a video filename(with extension) and returns the extracted background"""
@@ -18,13 +18,13 @@ def extract_background(videoFile):
 		print 'Frame Width', frame_width
 		print 'Frame Count', frame_count
 
-		frame_count = min(int(frame_count), 3000)
+		frame_count = int(frame_count)
 		print "Extracting background"
 		_,img = vid_cap.read()
 		avg_img = img
 		
 		
-		for fr in range(1, frame_count+1):
+		for fr in range(1, frame_count):
 			_,img = vid_cap.read()
 			fr_fl = float(fr)
 			avg_img = (fr_fl*avg_img + img)/(fr_fl+1)
