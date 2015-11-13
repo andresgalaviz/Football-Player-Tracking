@@ -1,7 +1,5 @@
 # Football-Player-Tracking
-Soccer player tracking system
 
-Please read completely:
 ## Products
 
 ### Stitched video
@@ -36,7 +34,25 @@ This uses the fairly simple concept of differentiating between background pixel 
 This function uses several OpenCV methods which were used merely for the means of speed and convenience, all of the methods were covered during the lectures. However while the concepts and techniques were covered in the lectures the specific implementations of the OpenCV methods may be different.
 
 The first step for tracking the players is to get the get the grayscale frame and compare the pixel values to the grayscale background and get the absolute difference between them. This is done with the **OpenCV Method: cv2.absdiff(gray_bg_img, gray_img)**. The next step is to put to 0 values below a certain treshold and to 255 values above a certain treshold. **OpenCV Method: cv2.threshold(bg_delta, 30, 255, cv2.THRESH_BINARY)** Again this is done just for speed and convenience. After this a technique to connect isolated points into one big one is used, it's similar to the ones seen in class where points get dilated by the use of a kernel(In this case the default one) and the result is a bigger united point mostly covering the player or other foreground objects. **OpenCV Method: cv2.dilate(thresholdimage, None, iterations=3)**. Finally a contour of this bigger point is obtained by using the **OpenCV Method: cv2.findContours(threshold.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)** that uses the technique not covered in class but described in:
-*Satoshi Suzuki and others. Topological structural analysis of digitized binary images by border following. Computer Vision, Graphics, and Image Processing, 30(1):32–46, 1985.* This technique basically follows the borders of a binary provided image and alters it to produce contours around the points.
+*Satoshi Suzuki and others. Topological structural analysis of digitized binary images by border following. Computer Vision, Graphics, and Image Processing, 30(1):32–46, 1985.* This technique basically follows the borders of a binary provided image and alters it to produce contours around the points. 
+
+After this the system loops through each of the detected countours, obtains a bounding rectangle: **OpenCV Method: cv2.boundingRect()** and classifies it as a player with the following criteria:
+- Feet point is inside the field polygon
+- Contour area is within the limits of players area on x,y location: **OpenCV Method: cv2.contourArea()**
+- It has a "human" rectangle-like form
+Noise is discarded.
+
+The tracking system then obtains the color of the player by averaging the hue component inside the player rectangle and classifies it as "Red", "Blue", "Unknown". Although the system can classify individual goalkeepers based on color, for the sake of offside measuring they are classified as either blue or red team. Color is drawn to represent the classification outcome.
+
+Source code: "src/playertrack.py" Method: track_player(hg_matrix)
+
+Source code: "src/huematcher.py" Method: average_hue(), is_red_player(), is_blue_player(), is_green_keeper(), is_white_keeper()
+
+Source code: "src/topview.py" 
+
+drawoffside.draw(img, player_top_points) Method: create_topview(hg_matrix, players_pos)
+
+
 
 # Proof of concept/Previous approaches: 
 
