@@ -4,8 +4,12 @@ Soccer player tracking system
 Please read completely:
 ## Products
 
-### Stitched video - pre detection.
-Video has been pre-calculated. It is located as "vid/panorama.mov". Again, if you want to test this you can simply rename the files and the system will re calculate everything. It will take time. 
+### Stitched video
+Video has been pre-calculated. It is located under "vid/panorama.mov". Iff you want to test the video stitching you can simply rename the files and the system will re calculate everything. It will take time. 
+**The system assumes the video is already created and is located in that location, to test this you mus download the video files Download football_left.mp4, football_mid.mp4, football_right.mp4 from:
+https://drive.google.com/folderview?id=0B7gBv2Jut0VxcDNENmxvS2N4Qk0&usp=sharing and place them under the vid folder. Then run "python videostitch.py" from within the "src/" folder.
+
+Source code: "src/videostitch.py"
 
 ### Real Time Football Player Tracking
 To execute system you must run "python main.py" from inside the src folder. In order to work you must make sure to have the required video codecs(Very important in Mac). If you are taking the code from this repository you must also follow the README.md file inside the "vid/" folder.
@@ -15,18 +19,26 @@ The system will do the following:
 *Background extraction will not be executed as we have provided a pre computed background however you can test this by deleting the background file 'img/side-view.jpg'.* 
 
 Source code: "src/bgextraction.py"
+
 This will extract the background from the video frames by using the averaging technique. The video is HD quality so it will take time. 
 
-### Homography Matrix extraction for topview
+### Homography Matrix extraction for Topview
 *Homography Matrix extraction will not be executed as we have provided a pre computed homography however you can test this by deleting the file 'txt/hgmatrix.txt'.* 
 
-Source code: "src/topview.py" Method create_homography()
-This method will use the extracted background and prompt the user to manually select with the pointer the four corners of this image. The image is quite large so it might have to be moved, the quality of the top projection is dependent on how well the corners are selected. The corners should be selected: Left-Down, Left-Top, Right-Top, Right-Down
+Source code: "src/topview.py" Method: create_homography()
 
+This method will use the extracted background and prompt the user to manually select with the pointer the four corners of this image. The image is quite large so it might have to be moved, the quality of the top projection is dependent on how well the corners are selected. The corners should be selected: Left-Down, Left-Top, Right-Top, Right-Down. After this the method will calculate a homography based on our provided coordinates for our top image.
+**OpenCV Method: cv2.findHomography(side_view_corners, top_view_corners)**
 
-We have provided a homography matrix that has been calculated and calibrated for our system but you can test the homography creation by renaming the file 'txt/hgmatrix.txt', after this if you run the system it will ask you to calibrate the points by selecting the four corners from the extracted background.
+### Real Time Player Tracking
+This uses the fairly simple concept of differentiating between background pixel values and frame pixel values. The way this method is implemented is based on the pre asumption that we have a background and that the cameras will not be moving during the duration of the video. 
 
+This function uses several OpenCV methods which were used merely for the means of speed and convenience, all of the methods were covered during the lectures. However while the concepts and techniques were covered in the lectures the specific implementations of the OpenCV methods may be different.
 
+The first step for tracking the players is to get the get the grayscale frame and compare the pixel values to the grayscale background and get the absolute difference between them. This is done with the **OpenCV Method: cv2.absdiff(gray_bg_img, gray_img)**. The next step is to put to 0 values below a certain treshold and to 255 values above a certain treshold. **OpenCV Method: cv2.threshold(bg_delta, 30, 255, cv2.THRESH_BINARY)** Again this is done just for speed and convenience. After this a technique to connect isolated points into one big one is used, it's similar to the ones seen in class where points get dilated by the use of a kernel(In this case the default one) and the result is a bigger united point mostly covering the player or other foreground objects. **OpenCV Method: cv2.dilate(thresholdimage, None, iterations=3)**. Finally a contour of this bigger point is obtained by using the **OpenCV Method: cv2.findContours(threshold.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)** that uses the technique not covered in class but described in:
+*Satoshi Suzuki and others. Topological structural analysis of digitized binary images by border following. Computer Vision, Graphics, and Image Processing, 30(1):32–46, 1985.* This technique basically follows the borders of a binary provided image and alters it to produce contours around the points.
+
+# Proof of concept/Previous approaches: 
 
 ## Object Detection
 
