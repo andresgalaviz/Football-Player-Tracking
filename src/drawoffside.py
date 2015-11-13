@@ -14,8 +14,8 @@ def getCorners():
 
 # get west and east side position of top view
 def getTopViewSide():
-	westLine = 44
-	eastLine = 598
+	westLine = 42
+	eastLine = 597
 	return westLine, eastLine
 
 # decide two points to draw a line between them

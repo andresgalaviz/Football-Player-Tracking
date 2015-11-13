@@ -21,7 +21,6 @@ def track_player(hg_matrix):
 	frame_width = vid_cap.get(cv.CV_CAP_PROP_FRAME_WIDTH)
 	frame_count = vid_cap.get(cv.CV_CAP_PROP_FRAME_COUNT)
 
-	#create a new video to draw lines for indicating offside players
 	fps = vid_cap.get(cv.CV_CAP_PROP_FPS)
 
     #flag to indicate whether computing player moving distance done
@@ -44,7 +43,7 @@ def track_player(hg_matrix):
 		threshold = cv2.threshold(bg_delta, 30, 255, cv2.THRESH_BINARY)[1]
 		
 
-		kernel = np.matrix([[0,0,0],[1,1,1],[0,0,0]],np.uint8)
+		
 		threshold = cv2.dilate(threshold, None, iterations=3)
 		
 		contours, _ = cv2.findContours(threshold.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -93,10 +92,11 @@ def track_player(hg_matrix):
 		top_img, player_top_points = topview.create_topview(hg_matrix, players_pos)
 		
 		img = drawoffside.draw(img, player_top_points)
-		img=cv2.resize(img,(0,0),fx=0.6,fy=0.6)
+		img = cv2.resize(img,(0,0),fx=0.6,fy=0.6)
 		cv2.imshow("Player detection", img)
 		cv2.imshow("Top image", top_img)
 		key = cv2.waitKey(1) & 0xFF
-	playerDistance.compute(first_player_pos, vid_filepath)
+	# playerDistance.compute(first_player_pos, vid_filepath) # Will compute player distance but was not tested and might cause problems
+	# Left commented
 	vid_cap.release()
 	cv2.destroyAllWindows()

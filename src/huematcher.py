@@ -3,16 +3,16 @@ import cv2.cv as cv
 
 # Hue profiles based on first frame of videos
 
-white_keeper_hp = 74
+white_keeper_hp = 130
 green_keeper_hp = 73
-red_player_hp = 40
-blue_player_hp = 76
+red_player_hp = 30
+blue_player_hp = 50
 referee_hp = 50
 linesman_hp = 25
 
 # Range width
 
-range_width = 10
+range_width = 20
 range_width_half = range_width / 2
 
 def is_white_keeper(average_hue):
@@ -46,11 +46,12 @@ def is_linesman(average_hue):
     return False
 
 def average_hue(x, y, width, height, frame):
+    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     sum = 0
     n_points = 0
     for i in range(x, x + width + 1):
         for j in range(y, y + height + 1):
-           sum += frame[j, i, 0]
+           sum += hsv[j, i, 0]
            n_points += 1
     return sum / n_points
 
