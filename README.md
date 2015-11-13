@@ -21,6 +21,7 @@ Key Ideas
 - Identify player team by comparing average hue of cluster
 
 Scripts should be run in the following order:
+
 1. foreground.py
   1. input: video frame, reference background image.
   1. Output
