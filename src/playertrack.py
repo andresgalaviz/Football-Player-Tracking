@@ -4,7 +4,8 @@ import cv
 import time
 import datetime
 import topview
-
+import sideline
+import playerDistance
 
 # def insideField(x,y):
 # 	# col: 130, row: 314
@@ -14,6 +15,7 @@ import topview
 # 	# col: 1093, row: 263
 bg_filpath = '..//img//side-view.jpg'
 vid_filepath = '..//vid//panorama.mov'
+writeVedioName = '..//vid//offside.avi'
 
 def track_player(hg_matrix):
 	bg_img = cv2.imread(bg_filpath)
@@ -22,6 +24,14 @@ def track_player(hg_matrix):
 	frame_height = vid_cap.get(cv.CV_CAP_PROP_FRAME_HEIGHT)
 	frame_width = vid_cap.get(cv.CV_CAP_PROP_FRAME_WIDTH)
 	frame_count = vid_cap.get(cv.CV_CAP_PROP_FRAME_COUNT)
+
+	#create a new video to draw lines for indicating offside players
+	fps = vid_cap.get(cv.CV_CAP_PROP_FPS)
+	videoWriter = cv2.VideoWriter(writeVedioName, -1, int(fps), (int(frame_width), int(frame_height)))
+
+    #flag to indicate whether computing player moving distance done
+	flag = True
+
 	while True:
 		aval, img = vid_cap.read()
 		if not aval:
@@ -62,6 +72,16 @@ def track_player(hg_matrix):
 
 			players_pos.append(feet_coord)
 			c +=1
+
+		# compute player moving distance
+		if(flag):
+			playerDistance.compute(players_pos)
+			flag = False
+		# draw offside lines
+		newFrame = sideline.drawLine(img, players_pos)
+		videoWriter.write(newFrame)
+
+
 		top_img = topview.create_topview(hg_matrix, players_pos)
 		img=cv2.resize(img,(0,0),fx=0.6,fy=0.6)
 		cv2.imshow("Player detection", img)

@@ -2,14 +2,59 @@ import cv2
 import cv2.cv as cv
 import numpy as np
 import math
+import sideline as sl
 
-videoName = 'panoramaFull1.avi'
-numOfPlayers = 2
+videoName = '..//vid//panorama.avi'
+numOfPlayers = 0
+fieldLen = 105.0
+fieldWid = 68.0
+
+
+def getCorresponding(point):
+    lu, ll, ru, rl = sl.getCorners()
+
+    orinX = point[0]
+    orinY = point[1]
+    lux = lu[0]
+    llx = ll[0]
+    rux = ru[0]
+    rlx = rl[0]
+    far = lu[1]
+    near = ll[1]
+    nearLen = rlx - llx
+    farLen = rux - lux
+    width = near - far
+
+    def getXonLeft(y):
+        return int(float(y - near) / float(far - near) * float(lux - llx)) + llx
+
+    def getXonRight(y):
+        return rlx - int(float(y - near) / float(far - near) * float(rlx - rux))
+
+    xl = getXonLeft(orinY)
+    xr = getXonRight(orinY)
+
+    xRatio = float(orinX - xl) / float(xr - xl)
+
+    xf = xRatio * farLen + lux
+    xn = xRatio * nearLen + llx
+    tempx = float(orinX - xf)
+    tempy = float(orinY - far)
+    tempnearx = float(xn - xf)
+
+    YRatio = math.sqrt((tempx * tempx + tempy * tempy) / (tempnearx * tempnearx + width * width))
+
+    RealX = xRatio * fieldLen
+    RealY = YRatio * fieldWid
+    return (RealX, RealY)
+
 def getDistance(point1, point2):
-    p1x = point1[0]
-    p1y = point1[1]
-    p2x = point2[0]
-    p2y = point2[1]
+    correspondingPoint1 = getCorresponding(point1)
+    correspondingPoint2 = getCorresponding(point2)
+    p1x = correspondingPoint1[0]
+    p1y = correspondingPoint1[1]
+    p2x = correspondingPoint2[0]
+    p2y = correspondingPoint2[1]
     return math.sqrt((p1x - p2x) * (p1x - p2x) + (p1y - p2y) * (p1y - p2y))
 
 # get the player list
@@ -23,8 +68,7 @@ def getplayers(frame):
 def fakePlayer():
     return [(165,105), (10, 53)]
 
-
-def main():
+def compute(playerList):
     capture = cv.CaptureFromFile(videoName)
 
     count = int(cv.GetCaptureProperty(capture, cv.CV_CAP_PROP_FRAME_COUNT))
@@ -40,21 +84,21 @@ def main():
     prePyr = cv.CreateImage((height / 3, width + 8), 8, cv.CV_8UC1) 
     curPyr = cv.CreateImage((height / 3, width + 8), 8, cv.CV_8UC1) 
 
+    numOfPlayers = len(playerList)
+
     # store players moving distance
     players = np.zeros(numOfPlayers)
 
     # store players position of last frame
-    prePlayers = [] 
+    prePlayers = playerList 
     # store players position of current frame
     curPlayers = [] 
 
     for f in xrange(count):
         frame = cv.QueryFrame(capture)
-
-        # find players
+        
         #Convert to gray
         cv.CvtColor(frame, curFrame, cv.CV_BGR2GRAY) 
-        prePlayers = fakePlayer()
         
         #Calculate the movement using the previous and the current frame using the previous points
         curPlayers, status, err = cv.CalcOpticalFlowPyrLK(preFrame, curFrame, prePyr, curPyr, prePlayers, (10, 10), 3, (cv.CV_TERMCRIT_ITER|cv.CV_TERMCRIT_EPS,20, 0.03), 0)
@@ -73,6 +117,7 @@ def main():
         prePlayers = curPlayers
     ###cv2.destroyAllWindows()
     # print distance
+    i = 0
     for player in players:
-        print "player running distance: ", player, "\n"
-main()
+        i += 1
+        print "player", i, "running distance: ", player, "\n"

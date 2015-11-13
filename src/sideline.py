@@ -2,44 +2,42 @@ import cv2
 import cv2.cv as cv
 import numpy as np
 
-videoName = 'panoramaFull1.avi' # video
-writeVedioName = 'test.avi'
-bgName = 'background.jpg' #background picture
+videoName = '..//vid//panorama.avi' # video
+writeVedioName = '..//vid//offside.avi'
+bgName = '..//img//background.jpg' #background picture
 color = (123,123,255) # line color
-videoWriter = cv2.VideoWriter('testResult.mp4', cv2.cv.CV_FOURCC('F', 'M', 'P', '4'), 0, (0,0))
+videoWriter = cv2.VideoWriter(writeVedioName, -1, 0, (0,0))
 
 #get left upper corner, left lower corner, right upper corner and right lower corner position
 # to be implemented, use fake field now
-def getCorners(backGroundPic):
-    lu, ru, ll, rl = (30,5),(300, 5),(5,90),(325,90)
+def getCorners():
+    lu, ll, ru, rl =(525,26), (145,130),(840,26),(1280,130)
     return lu, ll, ru, rl
 
-lu, ll, ru, rl = getCorners(bgName)
-
 # check whether player outside upper line
-def checkUpperArea(point):
+def checkUpperArea(point, lu, ll, ru, rl):
     return point[1] < lu[1]
 
 # check whether player outside lower line
-def checkLowerArea(point):
+def checkLowerArea(point, lu, ll, ru, rl):
     return point[1] > ll[1]
 
 # check whether player outside left line
-def checkLeftArea(point):
+def checkLeftArea(point, lu, ll, ru, rl):
     if(point[0] > lu[0]):
         return False
     else:
         return (float(lu[0] - point[0]) / float(lu[0] - ll[0])) > (float(lu[1] - point[1]) / float(lu[1] - ll[1]))
 
 # check whether player outside right line
-def checkRightArea(point):
+def checkRightArea(point, lu, ll, ru, rl):
     if(point[0] < ru[0]):
         return False
     else:
         return (float(point[0] - ru[0]) / float(rl[0] - ru[0])) > (float(ru[1] - point[1]) / float(ru[1] - rl[1]))
 
 # draw a line on the upper sideline
-def drawUpperLine(point):
+def drawUpperLine(point, lu, ll, ru, rl):
     y = lu[1]
     x1 = point[0] - 5
     x2 = point[0] + 5
@@ -50,7 +48,7 @@ def drawUpperLine(point):
     return x1, y, x2, y
 
 # draw a line on the lower sideline
-def drawLowerLine(point):
+def drawLowerLine(point, lu, ll, ru, rl):
     y = ll[1]
     x1 = point[0] - 5
     x2 = point[0] + 5
@@ -61,7 +59,7 @@ def drawLowerLine(point):
     return x1, y, x2, y
 
 # draw a line on the left sideline
-def drawLeftLine(point):
+def drawLeftLine(point, lu, ll, ru, rl):
     y1 = point[1] - 5
     y2 = point[1] + 5
     def getX(y):
@@ -72,7 +70,7 @@ def drawLeftLine(point):
     return x1, y1, x2, y2
 
 # draw a line on the right sideline
-def drawRightLine(point):
+def drawRightLine(point, lu, ll, ru, rl):
     y1 = point[1] - 5
     y2 = point[1] + 5
     def getX(y):
@@ -84,23 +82,23 @@ def drawRightLine(point):
 
 #if player is outside, draw a line at the corresponding sideline. 
 #If player is outside a corner, treat it as a point outside the upper/ lower sideline
-def checkOutSide(frame, point):
+def checkOutSide(frame, point, lu, ll, ru, rl):
     flag = False
-    if(checkUpperArea(point)):
+    if(checkUpperArea(point, lu, ll, ru, rl)):
         flag = True
-        x1, y1, x2, y2 = drawUpperLine(point)
+        x1, y1, x2, y2 = drawUpperLine(point, lu, ll, ru, rl)
 
-    elif(checkLowerArea(point)):
+    elif(checkLowerArea(point, lu, ll, ru, rl)):
         flag = True
-        x1, y1, x2, y2 = drawLowerLine(point)
+        x1, y1, x2, y2 = drawLowerLine(point, lu, ll, ru, rl)
 
-    elif(checkLeftArea(point)):
+    elif(checkLeftArea(point, lu, ll, ru, rl)):
         flag = True
-        x1, y1, x2, y2 = drawLeftLine(point)
+        x1, y1, x2, y2 = drawLeftLine(point, lu, ll, ru, rl)
 
-    elif(checkRightArea(point)):
+    elif(checkRightArea(point, lu, ll, ru, rl)):
         flag = True
-        x1, y1, x2, y2 = drawRightLine(point)
+        x1, y1, x2, y2 = drawRightLine(point, lu, ll, ru, rl)
 
     if(flag):
         p1 = (x1, y1)
@@ -128,6 +126,8 @@ def main():
     fps = int(cap.get(cv.CV_CAP_PROP_FPS))
     count = int(cap.get(cv.CV_CAP_PROP_FRAME_COUNT))
     videoWriter = cv2.VideoWriter(writeVedioName, -1, fps, (width, height))
+
+    lu, ll, ru, rl = getCorners(bgName)
     
     for f in xrange(count):
         _, frame = cap.read()
@@ -142,4 +142,8 @@ def main():
     cv2.destroyAllWindows()
     print "end"
 
-main()
+def drawLine(frame, players_pos):
+    lu, ll, ru, rl = getCorners()
+    for player in playerList:
+            newFrame = checkOutSide(frame, player, lu, ll, ru, rl)
+    return newFrame
