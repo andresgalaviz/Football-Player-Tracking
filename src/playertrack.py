@@ -95,6 +95,7 @@ def track_player(hg_matrix):
 		img = cv2.resize(img,(0,0),fx=0.6,fy=0.6)
 		cv2.imshow("Player detection", img)
 		cv2.imshow("Top image", top_img)
+		cv2.moveWindow("Top image", 0, 300)
 		key = cv2.waitKey(1) & 0xFF
 	# playerDistance.compute(first_player_pos, vid_filepath) # Will compute player distance but was not tested and might cause problems
 	# Left commented
