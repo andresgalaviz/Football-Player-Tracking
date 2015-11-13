@@ -93,12 +93,12 @@ panorama=cv2.resize(panorama,(0,0),fx=0.4,fy=0.4)
 
 height,width,layer=panorama.shape
 
-video = cv2.VideoWriter('panoramaFull1.avi',fourcc=-1,fps=24,frameSize=(width,height),isColor=1)
+video = cv2.VideoWriter('panoramaFull.avi',fourcc=-1,fps=24,frameSize=(width,height),isColor=1)
 
 video.write(panorama)
 
-#do the same to all the 7199 remaining frames
-for x in range(0, frameCount):
+#do the same to all the remaining frames
+for x in range(0, frameCount-1):
 
     if not cap1.isOpened():
         print('cannot open video 1')
