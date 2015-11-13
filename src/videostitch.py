@@ -93,7 +93,8 @@ panorama=cv2.resize(panorama,(0,0),fx=0.4,fy=0.4)
 
 height,width,layer=panorama.shape
 
-video = cv2.VideoWriter('panoramaFull.avi',fourcc=-1,fps=24,frameSize=(width,height),isColor=1)
+fourcc = cv2.cv.CV_FOURCC('m', 'p', '4', 'v') # note the lower case
+video = cv2.VideoWriter('panorama.mov',fourcc,fps=24,frameSize=(width,height),isColor=1)
 
 video.write(panorama)
 
