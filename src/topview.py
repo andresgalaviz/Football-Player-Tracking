@@ -56,15 +56,22 @@ def create_topview(hg_matrix, input_pts):
 	pts = np.matrix(np.zeros(shape=(len(input_pts),3)))
 	c = 0
 	for i in input_pts:
-		x,y = i[0], i[1]
+		x,y = i[0][0], i[0][1]
 		pts[c,:] = np.array([x,y,1], dtype = "float32")
 		c+=1
-
-	newPoints = np.empty([1,3], dtype = "float32")
-	
+	player_top_points = list()
+	newPoints = np.empty([len(input_pts),3], dtype = "float32")
+	c = 0
 	for i in pts:
 		newPoints = hg_matrix*(i.T)
 		x = newPoints[0]/float(newPoints[2])
 		y = newPoints[1]/float(newPoints[2])
-		cv2.circle(top_image,(x,y),3,255,-1)
-	return top_image
+		if(input_pts[c][1][0] == 'r'):
+			cv2.circle(top_image,(x,y),3,(0,0,255),-1)
+		elif(input_pts[c][1][0] == 'b'):
+			cv2.circle(top_image,(x,y),3,(255,0,0),-1)
+		else:
+			cv2.circle(top_image,(x,y),3,(255,255,255),-1)
+		player_top_points.append([[x, y], input_pts[c][1][0]])
+		c +=1
+	return top_image, player_top_points

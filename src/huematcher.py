@@ -78,23 +78,3 @@ def linesman(first_frame):
     hue_avg = average_hue(x=589, y=1562, width=23, height=70, frame=first_frame)
     print ("Linesman: %d" % (hue_avg))
     
-# def hue_profile():
-#     cap = cv2.VideoCapture("football_left.mp4")
-#     _,f = cap.read()
-#     print "Profiling hue averages of the following objects:"
-#     white_keeper(f)
-#     cap.release()
-#     cap = cv2.VideoCapture("football_right.mp4")
-#     _,f = cap.read()
-#     green_keeper(f)
-#     red_player(f)
-#     blue_player(f)
-#     referee(f)
-#     linesman(f)
-#     cap.release()
-
-# def main():
-#     hue_profile()
-
-# main()
-# print "Done!"

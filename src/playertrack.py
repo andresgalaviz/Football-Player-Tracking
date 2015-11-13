@@ -52,8 +52,9 @@ def track_player(hg_matrix):
 		players_pos = list()
 		
 		c = 0 
+		
 		for cn in contours:
-
+			ch_player = 'u'
 			(x, y, w, h) = cv2.boundingRect(cn)
 			feet_coord = [float(x + int(w/2.0)), float(y + h)]
 			
@@ -71,26 +72,30 @@ def track_player(hg_matrix):
 			player_hue = huematcher.average_hue(x, y, w, h, img)
 
 			if(huematcher.is_red_player(player_hue)):
-				cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 2)
+				cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 1)
+				ch_player = 'r'
 			elif(huematcher.is_blue_player(player_hue)):
-				cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
+				cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 1)
+				ch_player = 'b'
 			elif(huematcher.is_green_keeper(player_hue)):
-				cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 5)
+				cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 1)
+				ch_player = 'b'
 			elif(huematcher.is_white_keeper(player_hue)):
-				cv2.rectangle(img, (x, y), (x + w, y + h), (255, 255, 255), 5)
+				cv2.rectangle(img, (x, y), (x + w, y + h), (255, 255, 255), 1)
+				ch_player = 'r'
 			else:
 				cv2.rectangle(img, (x, y), (x + w, y + h), (255, 255, 255), 1)
-			players_pos.append(feet_coord)
+			players_pos.append([feet_coord, ch_player])
 			c +=1
 
 		if(firstFrame):
 			first_player_pos = list(players_pos)
 			firstFrame = False
-		top_img = topview.create_topview(hg_matrix, players_pos)
+		top_img, player_top_points = topview.create_topview(hg_matrix, players_pos)
 		img=cv2.resize(img,(0,0),fx=0.6,fy=0.6)
 		cv2.imshow("Player detection", img)
 		cv2.imshow("Top image", top_img)
-		key = cv2.waitKey(41) & 0xFF
+		key = cv2.waitKey(1) & 0xFF
 	playerDistance.compute(players_pos, vid_filepath)
 	vid_cap.release()
 	cv2.destroyAllWindows()
