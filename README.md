@@ -44,13 +44,16 @@ Noise is discarded.
 
 The tracking system then obtains the color of the player by averaging the hue component inside the player rectangle and classifies it as "Red", "Blue", "Unknown". Although the system can classify individual goalkeepers based on color, for the sake of offside measuring they are classified as either blue or red team. Color is drawn to represent the classification outcome.
 
+After this, the player points are passed to the topview file to create a transformation.
+Finally the transformed points are passed to the drawoffside file and a graphical overlay is drawn on top of the image.
+
 Source code: "src/playertrack.py" Method: track_player(hg_matrix)
 
 Source code: "src/huematcher.py" Method: average_hue(), is_red_player(), is_blue_player(), is_green_keeper(), is_white_keeper()
 
-Source code: "src/topview.py" 
+Source code: "src/topview.py"  Method: create_topview(hg_matrix, players_pos)
 
-drawoffside.draw(img, player_top_points) Method: create_topview(hg_matrix, players_pos)
+Source code: "src/drawoffside.py"  Method: draw(img, player_top_points) 
 
 
 
