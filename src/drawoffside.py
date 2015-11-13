@@ -7,15 +7,15 @@ color = (123,123,255)
 # get corner position in side view
 def getCorners():
 	wn = (1059, 52) # west north
-	ws = (132, 314) # west south
+	ws = (290, 270) # west south
 	en = (1675, 49) # east north
 	es = (2563, 261)# east south
 	return wn, ws, en, es
 
 # get west and east side position of top view
 def getTopViewSide():
-	westLine = 1059
-	eastLine = 1674
+	westLine = 44
+	eastLine = 598
 	return westLine, eastLine
 
 # decide two points to draw a line between them
@@ -57,12 +57,15 @@ def decidePoint(point):
 	###xRatio = float(orinX - wX) / float(eX - wX)
 
 	xRatio = float(orinX - westLine) / float(eastLine - westLine) 
+	print xRatio, northLenth, southLenth
 
 	nX = xRatio * northLenth + wnX
 	sX = xRatio * southLenth + wsX
 
 	nPoint = (int(nX), int(northLine))
 	sPoint = (int(sX), int(southLine))
+
+
 	return nPoint, sPoint
 
 # add a new player into a list only if neccessary
@@ -126,7 +129,7 @@ def draw(img, players):
 			cv2.line(img, p1, p2, color, 2)
 			###print p1[0], ',,, ', p1[1], '///', p2[0], ',,, ', p2[1]
 		if(bluePlayers[2][0] < redPlayers[3][0]):
-			p1, p2 = decidePoint(redPlayers[1])
+			p1, p2 = decidePoint(redPlayers[3])
 			cv2.line(img, p1, p2, color, 2)
 			###print p1[0], ',,, ', p1[1], '///', p2[0], ',,, ', p2[1]
 
@@ -141,9 +144,9 @@ def draw(img, players):
 # for testing
 def test(index):
 	img = cv2.imread('side-view.jpg')
-	players1 = [[[1069, 50], 'r'], [[1169, 50], 'b'], [[1269, 50], 'r'], [[1319, 50], 'r'], [[1324, 50], 'b'], [[1374, 50], 'b'], [[1474, 50], 'r'], [[1574, 50], 'b']] # should have line
-	players2 = [[[1069, 50], 'b'], [[1169, 50], 'r'], [[1269, 50], 'r'], [[1319, 50], 'r'], [[1324, 50], 'b'], [[1374, 50], 'b'], [[1474, 50], 'b'], [[1574, 50], 'r']] # should have line
-	players3 = [[[1069, 50], 'r'], [[1169, 50], 'r'], [[1269, 50], 'b'], [[1319, 50], 'r'], [[1324, 50], 'b'], [[1374, 50], 'r'], [[1474, 50], 'b'], [[1574, 50], 'b']] # should have no line
+	players1 = [[[94, 50], 'r'], [[144, 50], 'b'], [[194, 50], 'r'], [[244, 50], 'r'], [[398, 50], 'b'], [[448, 50], 'b'], [[498, 50], 'r'], [[548, 50], 'b']] # should have line
+	players2 = [[[94, 50], 'b'], [[144, 50], 'r'], [[194, 50], 'r'], [[244, 50], 'r'], [[398, 50], 'b'], [[448, 50], 'b'], [[498, 50], 'b'], [[548, 50], 'r']] # should have line
+	players3 = [[[94, 50], 'r'], [[144, 50], 'r'], [[194, 50], 'b'], [[244, 50], 'r'], [[398, 50], 'b'], [[448, 50], 'r'], [[498, 50], 'b'], [[548, 50], 'b']] # should have no line
 	players4 = [[[1,1], 'u']]
 	if(index == 1):
 		img = draw(img, players1)
