@@ -36,7 +36,13 @@ def track_player(hg_matrix):
 		aval, img = vid_cap.read()
 		if not aval:
 			break
+
 		gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+		###cv2.imshow('img',img)
+		###cv2.imshow('gray', gray_img)
+		###cv2.waitKey(0)
+		###cv2.destroyAllWindows()
+
 		bg_delta = cv2.absdiff(gray_bg_img, gray_img)
 
 		
@@ -75,7 +81,7 @@ def track_player(hg_matrix):
 
 		# compute player moving distance
 		if(flag):
-			playerDistance.compute(players_pos)
+			playerDistance.compute(players_pos, vid_filepath)
 			flag = False
 		# draw offside lines
 		newFrame = sideline.drawLine(img, players_pos)

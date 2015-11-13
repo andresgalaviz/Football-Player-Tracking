@@ -2,7 +2,7 @@ import cv2
 import cv2.cv as cv
 import numpy as np
 
-videoName = '..//vid//panorama.avi' # video
+videoName = '..//vid//panorama.mov' # video
 writeVedioName = '..//vid//offside.avi'
 bgName = '..//img//background.jpg' #background picture
 color = (123,123,255) # line color

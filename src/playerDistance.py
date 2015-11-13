@@ -68,7 +68,8 @@ def getplayers(frame):
 def fakePlayer():
     return [(165,105), (10, 53)]
 
-def compute(playerList):
+def compute(playerList, video):
+    videoName = video
     capture = cv.CaptureFromFile(videoName)
 
     count = int(cv.GetCaptureProperty(capture, cv.CV_CAP_PROP_FRAME_COUNT))
