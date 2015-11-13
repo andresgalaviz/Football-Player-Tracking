@@ -43,7 +43,7 @@ def decidePoint(point):
 
 	# in side view
 	northLenth = enX - wnX
-	southLenth = esX - wnX
+	southLenth = esX - wsX
 
 	###def getXonWest(y):
 	###	return int(float(y - southLine) / float(northLine - southLine) * float(wnX - wsX)) + wsX
