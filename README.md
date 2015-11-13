@@ -3,28 +3,28 @@
 ## Products
 
 ### Stitched video
-Video has been pre-calculated. It is located under "vid/panorama.mov". Iff you want to test the video stitching you can simply rename the files and the system will re calculate everything. It will take time. 
+Video has been pre-calculated. It is located under "vid/panorama.mov". If you want to test the video stitching you can simply rename the files and the system will re calculate everything. It will take time. 
 **The system assumes the video is already created and is located in that location, to test this you mus download the video files Download football_left.mp4, football_mid.mp4, football_right.mp4 from:
 https://drive.google.com/folderview?id=0B7gBv2Jut0VxcDNENmxvS2N4Qk0&usp=sharing and place them under the vid folder. Then run "python videostitch.py" from within the "src/" folder.
 I. Find matching points
 -sift.detectAndCompute # find the keypoints and descriptors with SIFT
--cv2.FlannBasedMatcher, flann.knnMatch #FLANN stands for Fast Library for Approximate Nearest Neighbors. It contains a collection of algorithms optimized for fast nearest neighbor search in large datasets and for high dimensional features. 
+- **OpenCV Method: cv2.FlannBasedMatcher()**, flann.knnMatch #FLANN stands for Fast Library for Approximate Nearest Neighbors. It contains a collection of algorithms optimized for fast nearest neighbor search in large datasets and for high dimensional features. 
 
 Reference: http://docs.opencv.org/master/da/df5/tutorial_py_sift_intro.html#gsc.tab=0
 
-II. find homography matrix
--cv2.findHomography #Finds a perspective transformation between two planes.
+II. Find homography matrix
+- **OpenCV Method: cv2.findHomography()** #Finds a perspective transformation between two planes.
 Reference: http://docs.opencv.org/2.4/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html
 
-III.stitch 2 images
--perspectiveTransform #Performs the perspective matrix transformation of vectors. The function transforms a sparse set of 2D or 3D vectors.
+III. Stitch 2 images
+- PerspectiveTransform #Performs the perspective matrix transformation of vectors. The function transforms a sparse set of 2D or 3D vectors.
 Reference: http://docs.opencv.org/2.4/modules/core/doc/operations_on_arrays.html#void perspectiveTransform(InputArray src, OutputArray dst, InputArray m)
--cv2.warpPerspective #The function warpPerspective transforms the source image using the specified matrix:
+- **OpenCV Method: cv2.warpPerspective()** #The function warpPerspective transforms the source image using the specified matrix:
 Inline image 1
 
-IV. read video
--cap1.read() #read one frame from the open video
-- cv2.VideoWriter #write the video
+IV. Read video
+- cap1.read() #read one frame from the open video
+- **OpenCV Method: cv2.VideoWriter()** #write the video
 
 Source code: "src/videostitch.py"
 
