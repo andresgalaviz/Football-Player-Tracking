@@ -51,11 +51,11 @@ def warpTwoImages(img1, img2, H):
 
 
 #step1: capture the video and get the frames
-cap1=cv2.VideoCapture('football_left.mp4')
-cap2=cv2.VideoCapture('football_mid.mp4')
-cap3 = cv2.VideoCapture('football_right.mp4')
+cap1=cv2.VideoCapture('..//vid//football_left.mp4')
+cap2=cv2.VideoCapture('..//vid//football_mid.mp4')
+cap3 = cv2.VideoCapture('..//vid//football_right.mp4')
 
-frameCount=cap1.get(cv.CV_CAP_PROP_FRAME_COUNT)
+frameCount=int(cap1.get(cv.CV_CAP_PROP_FRAME_COUNT))
 
 
 #stitch the first 3 frames, get homography matrices used in the remaining frames
@@ -94,7 +94,7 @@ panorama=cv2.resize(panorama,(0,0),fx=0.4,fy=0.4)
 height,width,layer=panorama.shape
 
 fourcc = cv2.cv.CV_FOURCC('m', 'p', '4', 'v') # note the lower case
-video = cv2.VideoWriter('panorama.mov',fourcc,fps=24,frameSize=(width,height),isColor=1)
+video = cv2.VideoWriter('..//vid//panorama.mov',fourcc,fps=24,frameSize=(width,height),isColor=1)
 
 video.write(panorama)
 

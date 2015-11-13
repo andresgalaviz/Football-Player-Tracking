@@ -4,7 +4,6 @@ import cv
 import time
 import datetime
 import topview
-import sideline
 import huematcher
 import playerDistance
 import matplotlib.path as path
@@ -23,7 +22,6 @@ def track_player(hg_matrix):
 
 	#create a new video to draw lines for indicating offside players
 	fps = vid_cap.get(cv.CV_CAP_PROP_FPS)
-	# videoWriter = cv2.VideoWriter(writeVedioName, -1, int(fps), (int(frame_width), int(frame_height)))
 
     #flag to indicate whether computing player moving distance done
 	flag = True
@@ -96,6 +94,6 @@ def track_player(hg_matrix):
 		cv2.imshow("Player detection", img)
 		cv2.imshow("Top image", top_img)
 		key = cv2.waitKey(1) & 0xFF
-	playerDistance.compute(players_pos, vid_filepath)
+	playerDistance.compute(first_player_pos, vid_filepath)
 	vid_cap.release()
 	cv2.destroyAllWindows()

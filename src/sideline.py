@@ -3,10 +3,8 @@ import cv2.cv as cv
 import numpy as np
 
 videoName = '..//vid//panorama.mov' # video
-writeVedioName = '..//vid//offside.avi'
 bgName = '..//img//background.jpg' #background picture
 color = (123,123,255) # line color
-videoWriter = cv2.VideoWriter(writeVedioName, -1, 0, (0,0))
 
 #get left upper corner, left lower corner, right upper corner and right lower corner position
 # to be implemented, use fake field now
@@ -106,41 +104,6 @@ def checkOutSide(frame, point, lu, ll, ru, rl):
         cv2.line(frame,p1,p2,color, 2)
 
     return frame
-
-# get the player list
-# to be implemented
-# use cv.GoodFeaturesToTrack to get fake players first
-def extractPlayers(frame):
-    #Convert to gray
-    cv.CvtColor(frame, frame, cv.CV_BGR2GRAY) 
-    return cv.GoodFeaturesToTrack(frame, None, None, 22, 0.1, 1)
-
-#fake positions for testing
-def fakePlayers():
-    return [(1,1), (95,95), (1,60), (350,60), (10,1), (40,1), (400,95)]
-
-def main():
-    cap = cv2.VideoCapture(videoName)
-    width = int(cap.get(cv.CV_CAP_PROP_FRAME_WIDTH))
-    height = int(cap.get(cv.CV_CAP_PROP_FRAME_HEIGHT))
-    fps = int(cap.get(cv.CV_CAP_PROP_FPS))
-    count = int(cap.get(cv.CV_CAP_PROP_FRAME_COUNT))
-    videoWriter = cv2.VideoWriter(writeVedioName, -1, fps, (width, height))
-
-    lu, ll, ru, rl = getCorners(bgName)
-    
-    for f in xrange(count):
-        _, frame = cap.read()
-	#playerList = extractPlayers(frame)
-        playerList = fakePlayers()
-        for player in playerList:
-            frame = checkOutSide(frame, player)
-        videoWriter.write(frame)
-        #####cv2.imshow("test", frame)
-        #####cv2.waitKey(100)
-        #####print "sth happens"    
-    cv2.destroyAllWindows()
-    print "end"
 
 def drawLine(frame, players_pos):
     lu, ll, ru, rl = getCorners()
