@@ -3,8 +3,8 @@ import cv2.cv as cv
 
 # Hue profiles based on first frame of videos
 
-white_keeper_hp = 130
-green_keeper_hp = 73
+white_keeper_hp = 74
+green_keeper_hp = 40
 red_player_hp = 30
 blue_player_hp = 50
 referee_hp = 50
@@ -12,7 +12,7 @@ linesman_hp = 25
 
 # Range width
 
-range_width = 20
+range_width = 10
 range_width_half = range_width / 2
 
 def is_white_keeper(average_hue):

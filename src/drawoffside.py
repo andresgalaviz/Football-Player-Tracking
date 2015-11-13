@@ -57,7 +57,7 @@ def decidePoint(point):
 	###xRatio = float(orinX - wX) / float(eX - wX)
 
 	xRatio = float(orinX - westLine) / float(eastLine - westLine) 
-	print xRatio, northLenth, southLenth
+	
 
 	nX = xRatio * northLenth + wnX
 	sX = xRatio * southLenth + wsX

@@ -72,15 +72,15 @@ def track_player(hg_matrix):
 			if(huematcher.is_red_player(player_hue)):
 				cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 1)
 				ch_player = 'r'
-			elif(huematcher.is_blue_player(player_hue)):
-				cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 1)
-				ch_player = 'b'
 			elif(huematcher.is_green_keeper(player_hue)):
+				cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 1)
+				ch_player = 'r'
+			elif(huematcher.is_blue_player(player_hue)):
 				cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 1)
 				ch_player = 'b'
 			elif(huematcher.is_white_keeper(player_hue)):
 				cv2.rectangle(img, (x, y), (x + w, y + h), (255, 255, 255), 1)
-				ch_player = 'r'
+				ch_player = 'b'
 			else:
 				cv2.rectangle(img, (x, y), (x + w, y + h), (255, 255, 255), 1)
 			players_pos.append([feet_coord, ch_player])
