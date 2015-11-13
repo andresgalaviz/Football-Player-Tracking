@@ -24,9 +24,6 @@ def main():
 		bgextraction.extract_background(vid_filepath)
 	bg_img = cv2.imread(bg_filpath)
 	print "Background image found"
-	cv2.imshow("Background Image", bg_img)
-	cv2.waitKey(0)
-	cv2.destroyAllWindows()
 
 	if(not os.path.isfile(hgmatrix_filepath)):
 		if(not os.path.exists('..//txt')):

@@ -11,7 +11,7 @@ videoWriter = cv2.VideoWriter(writeVedioName, -1, 0, (0,0))
 #get left upper corner, left lower corner, right upper corner and right lower corner position
 # to be implemented, use fake field now
 def getCorners():
-    lu, ll, ru, rl =(525,26), (145,130),(840,26),(1280,130)
+    lu, ll, ru, rl =(1059,52), (132,314),(1675,49),(2563,261)
     return lu, ll, ru, rl
 
 # check whether player outside upper line
@@ -101,8 +101,8 @@ def checkOutSide(frame, point, lu, ll, ru, rl):
         x1, y1, x2, y2 = drawRightLine(point, lu, ll, ru, rl)
 
     if(flag):
-        p1 = (x1, y1)
-        p2 = (x2, y2)
+        p1 = (int(x1), int(y1))
+        p2 = (int(x2), int(y2))
         cv2.line(frame,p1,p2,color, 2)
 
     return frame
@@ -144,6 +144,6 @@ def main():
 
 def drawLine(frame, players_pos):
     lu, ll, ru, rl = getCorners()
-    for player in playerList:
+    for player in players_pos:
             newFrame = checkOutSide(frame, player, lu, ll, ru, rl)
     return newFrame

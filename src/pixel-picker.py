@@ -40,7 +40,7 @@ def main():
     
     
     
-    cap.release()
+    vid_cap.release()
 
 main()
 print("Done! Took %s seconds" % (time.time() - start_time))
