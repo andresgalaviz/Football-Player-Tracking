@@ -7,6 +7,7 @@ import topview
 import huematcher
 import playerDistance
 import matplotlib.path as path
+import drawoffside
 
 bg_filpath = '..//img//side-view.jpg'
 vid_filepath = '..//vid//panorama.mov'
@@ -90,6 +91,8 @@ def track_player(hg_matrix):
 			first_player_pos = list(players_pos)
 			firstFrame = False
 		top_img, player_top_points = topview.create_topview(hg_matrix, players_pos)
+		
+		img = drawoffside.draw(img, player_top_points)
 		img=cv2.resize(img,(0,0),fx=0.6,fy=0.6)
 		cv2.imshow("Player detection", img)
 		cv2.imshow("Top image", top_img)

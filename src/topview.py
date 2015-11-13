@@ -64,8 +64,8 @@ def create_topview(hg_matrix, input_pts):
 	c = 0
 	for i in pts:
 		newPoints = hg_matrix*(i.T)
-		x = newPoints[0]/float(newPoints[2])
-		y = newPoints[1]/float(newPoints[2])
+		x = int(newPoints[0]/float(newPoints[2]))
+		y = int(newPoints[1]/float(newPoints[2]))
 		if(input_pts[c][1][0] == 'r'):
 			cv2.circle(top_image,(x,y),3,(0,0,255),-1)
 		elif(input_pts[c][1][0] == 'b'):
