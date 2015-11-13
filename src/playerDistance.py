@@ -110,7 +110,8 @@ def compute(playerList, video):
             cv.CvtColor(frame, img, cv.CV_BGR2GRAY)
             for i in range(numOfPlayers):
                 font=cv.InitFont(cv.CV_FONT_HERSHEY_SCRIPT_SIMPLEX, 0.4, 0.4, 0, 2, 3)
-                cv.PutText(img, str(i), prePlayers[i], font, (255,255,255))
+                
+                cv.PutText(img, str(i), (int(prePlayers[i][0][0]), int(prePlayers[i][0][1])), font, (255,255,255))
             cv.SaveImage(playerInfo,img)
             flagInfo = False
 

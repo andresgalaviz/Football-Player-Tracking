@@ -34,6 +34,7 @@ def create_homography():
 	side_image = cv2.imread(filename_sideview)
 	
 	print "Select the four corners from the Background"
+	print "The corners should be selected: Left-Down, Left-Top, Right-Top, Right-Down"
 	cv2.namedWindow('Side-View')
 	cv.SetMouseCallback('Side-View', field_click, None)
 	cv2.imshow('Side-View', side_image)
