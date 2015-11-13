@@ -31,11 +31,14 @@ def main():
     print "Frame width: " + str(fwidth) + "\nFrame height: " + str(fheight) + "\nFrames per second: " + str(fps) + "\nFrame count: " + str(fcount)
 
     _,img = vid_cap.read()
+    filename_topview = '..//img//top-view.jpg'
+    
+    top_image = cv2.imread(filename_topview)
     
     # img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     cv2.namedWindow('frame1')
     cv.SetMouseCallback('frame1', on_mouse, None)
-    cv2.imshow('frame1', img)
+    cv2.imshow('frame1', top_image)
     cv2.waitKey(0)
     
     
