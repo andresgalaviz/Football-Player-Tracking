@@ -13,7 +13,13 @@ To execute system you must run "python main.py" from inside the src folder. In o
 The system will do the following:
 #### Background extraction
 *Background extraction will not be executed as we have provided a pre computed background however you can test this by deleting the background file 'img/side-view.jpg'.* 
-This will extract the background from the length of video frames by using the averaging techniq The video is HD quality so it will take time.
+This will extract the background from the video frames by using the averaging technique. The video is HD quality so it will take time. File: "src/bgextraction.py"
+
+### Homography Matrix extraction for topview
+*Homography Matrix extraction will not be executed as we have provided a pre computed homography however you can test this by deleting the file 'txt/hgmatrix.txt'.* 
+File: "src/topview.py" Method create_homography()
+This method will use the extracted background and prompt the user to manually select with the pointer the four corners of this image. The image is quite large so it might have to be moved, the quality of the top projection is dependent on how well the corners are selected. The corners should be selected: Left-Down, Left-Top, Right-Top, Right-Down
+
 
 We have provided a homography matrix that has been calculated and calibrated for our system but you can test the homography creation by renaming the file 'txt/hgmatrix.txt', after this if you run the system it will ask you to calibrate the points by selecting the four corners from the extracted background.
 
