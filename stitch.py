@@ -117,4 +117,3 @@ for x in range(0, frameCount):
     panorama=cv2.resize(panorama,(0,0),fx=0.4,fy=0.4)
     video.write(panorama)
 
-    print(x)
