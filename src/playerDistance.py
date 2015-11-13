@@ -5,6 +5,9 @@ import math
 import sideline as sl
 
 videoName = '..//vid//panorama.avi'
+recordFile = '..//txt//playerMovingDistance.txt'
+playerInfo = '..//img//playersInfo.jpg'
+
 numOfPlayers = 0
 fieldLen = 105.0
 fieldWid = 68.0
@@ -95,8 +98,22 @@ def compute(playerList, video):
     # store players position of current frame
     curPlayers = [] 
 
+    img = cv.CreateImage((width,height), 8, 1)
+
+    #flag of storing player info
+    flagInfo = True
+
     for f in xrange(count):
         frame = cv.QueryFrame(capture)
+
+        if(flagInfo):
+            cv.CvtColor(frame, img, cv.CV_BGR2GRAY)
+            for i in range(numOfPlayers):
+                font=cv.InitFont(cv.CV_FONT_HERSHEY_SCRIPT_SIMPLEX, 0.4, 0.4, 0, 2, 3)
+                cv.PutText(img, str(i), prePlayers[i], font, (255,255,255))
+            cv.SaveImage(playerInfo,img)
+            flagInfo = False
+
         
         #Convert to gray
         cv.CvtColor(frame, curFrame, cv.CV_BGR2GRAY) 
@@ -119,6 +136,11 @@ def compute(playerList, video):
     ###cv2.destroyAllWindows()
     # print distance
     i = 0
+    f = open(recordFile, 'w')
     for player in players:
         i += 1
         print "player", i, "running distance: ", player, "\n"
+        f.write("player" + str(i) +" running distance: " + str(player) + "meters\n")
+
+###compute(fakePlayer(), videoName)
+
